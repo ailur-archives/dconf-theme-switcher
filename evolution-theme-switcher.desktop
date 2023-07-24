@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+TryExec=themeswitcher
+Exec=themeswitcher
+Icon=weather-clear-symbloic
+Terminal=false
+Categories=System;
+
+Name=Theme Switcher
+GenericName=Theme Switcher
+Comment=Simple switcher between a light and dark theme
+StartupWMClass=themeswitcher
