@@ -10,7 +10,7 @@ CFLAGS = `pkg-config --cflags gtk+-3.0`
 LDFLAGS = `pkg-config --libs gtk+-3.0`
 
 # Source files
-SRC = mode_switcher.c
+SRC = themeswitcher.c
 
 # Object files
 OBJ = $(SRC:.c=.o)
