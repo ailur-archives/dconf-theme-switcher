@@ -1,2 +1,2 @@
-# Evolution-theme-switcher
-Just a theme switcher for evolution-desktop
+# dconf-theme-switcher
+A simple light/dark theme switcher for most DEs using dconf
