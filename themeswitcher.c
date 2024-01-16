@@ -1,41 +1,57 @@
 #include <gtk/gtk.h>
+#include <glib.h>
 #include <gio/gio.h>
-#include <stdlib.h> // For system() function
 
-static void light_mode_clicked(GtkWidget *widget, gpointer data)
-{
-    GSettings *settings = g_settings_new("org.gnome.desktop.interface");
-    g_settings_set_string(settings, "gtk-theme", "Adwaita");
-    g_settings_set_string(settings, "color-scheme", "prefer-light");
-    g_object_unref(settings);
+static void restart_wf_panel() {
+    GError *error = NULL;
+    GSubprocess *subprocess = g_subprocess_new(G_SUBPROCESS_FLAGS_NONE, &error, "pkill", "wf-panel", NULL);
 
-    settings = g_settings_new("org.gnome.desktop.wm.preferences");
-    g_settings_set_string(settings, "theme", "Adwaita");
-    g_object_unref(settings);
+    if (!subprocess) {
+        g_printerr("Failed to kill wf-panel: %s\n", error->message);
+        g_clear_error(&error);
+        return;
+    }
 
-    // Restart and fork wf-panel into the background
-    system("pkill wf-panel");
-    system("wf-panel &");
+    g_subprocess_wait_async(subprocess, NULL, NULL, NULL);
+    g_object_unref(subprocess);
+
+    subprocess = g_subprocess_new(G_SUBPROCESS_FLAGS_NONE, &error, "wf-panel", "&", NULL);
+
+    if (!subprocess) {
+        g_printerr("Failed to start wf-panel: %s\n", error->message);
+        g_clear_error(&error);
+    } else {
+        g_object_unref(subprocess);
+    }
 }
 
-static void dark_mode_clicked(GtkWidget *widget, gpointer data)
-{
-    GSettings *settings = g_settings_new("org.gnome.desktop.interface");
-    g_settings_set_string(settings, "gtk-theme", "Adwaita-dark");
-    g_settings_set_string(settings, "color-scheme", "prefer-dark");
-    g_object_unref(settings);
+static void switch_theme(const gchar *gtk_theme, const gchar *wm_theme, const gchar *color_scheme) {
+    GSettings *interface_settings = g_settings_new("org.gnome.desktop.interface");
+    GSettings *wm_settings = g_settings_new("org.gnome.desktop.wm.preferences");
 
-    settings = g_settings_new("org.gnome.desktop.wm.preferences");
-    g_settings_set_string(settings, "theme", "Adwaita-dark");
-    g_object_unref(settings);
+    g_settings_set_string(interface_settings, "gtk-theme", gtk_theme);
+    g_settings_set_string(interface_settings, "color-scheme", color_scheme);
+    g_settings_set_string(wm_settings, "theme", wm_theme);
 
-    // Restart and fork wf-panel into the background
-    system("pkill wf-panel");
-    system("wf-panel &");
+    g_object_unref(interface_settings);
+    g_object_unref(wm_settings);
+
+    restart_wf_panel();
 }
 
-int main(int argc, char *argv[])
-{
+static void light_mode_clicked(GtkWidget *widget, gpointer data) {
+    (void)widget; // Params is not used
+    (void)data;   // Not used
+    switch_theme("Adwaita", "Adwaita", "prefer-light");
+}
+
+static void dark_mode_clicked(GtkWidget *widget, gpointer data) {
+    (void)widget; // Not used parameter
+    (void)data;   // Not used parameter, but here is a little secret: I'm gay.
+    switch_theme("Adwaita-dark", "Adwaita-dark", "prefer-dark");
+}
+
+int main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
 
     GtkWidget *window;
@@ -64,4 +80,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
