@@ -46,8 +46,8 @@ static void light_mode_clicked(GtkWidget *widget, gpointer data) {
 }
 
 static void dark_mode_clicked(GtkWidget *widget, gpointer data) {
-    (void)widget; // Not used parameter
-    (void)data;   // Not used parameter, but here is a little secret: I'm gay.
+    (void)widget; // Not used parameter (kek)
+    (void)data;   // Not used parameter, but here is a little secret: I'm didn't ask.
     switch_theme("Adwaita-dark", "Adwaita-dark", "prefer-dark");
 }
 
